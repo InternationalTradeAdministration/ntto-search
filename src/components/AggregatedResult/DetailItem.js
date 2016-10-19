@@ -1,4 +1,4 @@
-import { compact, get, isEmpty, map } from '../../utils/lodash';
+import { compact, get, isEmpty, map, startCase } from '../../utils/lodash';
 import React, { PropTypes } from 'react';
 import moment from 'moment';
 
@@ -104,6 +104,50 @@ const PortsPercentages = ({value}) => {
 };
 PortsAmounts.propTypes = { value: PropTypes.array };
 
+const I92List = ({value}) => {
+  const items = compact(map(value, (v, k) => {
+    return(
+    <li key={k}>
+      {k}:  <I92Table value={v} />
+    </li>
+    );
+  }));
+  if (isEmpty(items)) return null;
+
+  return <ul className="explorer__result-ports_amounts">{items}</ul>;
+};
+I92List.propTypes = { value: PropTypes.object };
+
+const I92Table = ({value}) => {
+  const items = compact(map(value, (v, k) => {
+    return(
+    <tr key={k}>
+      <td className="ports-cell">{moment(k).utc().format('MMM YYYY')}</td>
+      <td className="ports-cell"> <I92Amounts value={v} /> </td>
+    </tr>
+    );
+  }));
+  if (isEmpty(items)) return null;
+
+  return <table className="explorer__result-i92_table"><tbody>{items}</tbody></table>;
+};
+I92Table.propTypes = { value: PropTypes.object };
+
+const I92Amounts = ({value}) => {
+  const items = compact(map(value, (v, k) => {
+    return(
+    <li key={k}>
+      {startCase(k)}:  {v}
+    </li>
+    );
+  }));
+  if (isEmpty(items)) return null;
+
+  return <ul className="explorer__result-i92_amounts">{items}</ul>;
+};
+I92Amounts.propTypes = { value: PropTypes.object };
+
+
 export {
   Link,
   ListItem,
@@ -112,5 +156,6 @@ export {
   MonthlyAmountsList,
   PortsList,
   PortsAmounts,
-  PortsPercentages
+  PortsPercentages,
+  I92List
 };

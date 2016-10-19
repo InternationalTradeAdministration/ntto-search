@@ -41,7 +41,7 @@ const AggregatedResult = ({ onPaging, query = {}, results }) => {
   if (results.isFetchingAggs) return null;
 
   const items = map(results.pageItems, result => {
-    const key = result.i94_country_or_region;
+    const key = result.country ? result.country : result.i94_country_or_region;
     return <Item key={key} result={result} visibleFields={results.visibleFields}/>
   });
 

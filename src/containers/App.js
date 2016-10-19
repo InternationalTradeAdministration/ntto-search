@@ -61,8 +61,10 @@ class App extends Component {
 
     return (
       <div className="explorer">
-        <h1 className="Header-1"><b>National Travel and Tourism Office (NTTO) I-94 Arrivals Data</b></h1>
-        <p className="DefaultParagraph-1">Search for I-94 arrivals data and generate reports for each country or region in the results. </p>
+        <h1 className="Header-1"><b>National Travel and Tourism Office (NTTO) Travel Data</b></h1>
+        <p className="DefaultParagraph-1">
+          Search for travel data and generate reports for each country or region in the results.  I-94 results show all international arrivals for a given country and month.  APIS (formerly I-92) results show air-only departures and arrivals between specific foreign and domestic ports for a given month.
+         </p>
 
         <div className="explorer__content">
 

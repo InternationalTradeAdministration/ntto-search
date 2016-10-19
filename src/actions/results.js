@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { stringify } from 'querystring';
-import { isEmpty, omit, values } from '../utils/lodash';
+import { isEmpty, omit, values, map, forEach, has} from '../utils/lodash';
 import { buildAggResults } from './build_agg_results.js';
 import { buildReports } from './build_reports.js';
 import { REQUEST_RESULTS, REQUEST_AGG_RESULTS, RECEIVE_RESULTS, RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS, SET_VISIBLE_FIELDS } from 'constants';
@@ -53,46 +53,73 @@ export function setVisibleFields(visible_fields){
   };
 }
 
-function aggregateResults(json, querystring, params, offset, agg_results) {
-  // 10k is the max offset that can be reached in Elasticsearch:
-  if(json.total >= 10000) return receiveAggResults([]);
-  
-  if(Object.prototype.hasOwnProperty.call(agg_results, 'results')){
-    agg_results.results = buildAggResults(json.results, agg_results.results, params);
-    agg_results.raw_total += json.results.length;
+function aggregateResults(json, querystring, params, offset, agg_results, apis) {
+  var results = {};  
+  var count = 0;
+  for (var key in apis){
+    // 10k is the max offset that can be reached in Elasticsearch:
+    if (json[count].total >= 10000) return receiveAggResults([]);
+    results[key] = json[count];
+    count += 1;
   }
+    
+  if(has(agg_results, 'results')){
+    agg_results.results = buildAggResults(results, agg_results.results, params);
+    if (has(results, 'i94')) agg_results.i94_total += results.i94.results.length;
+    if (has(results, 'i92')) agg_results.i92_total += results.i92.results.length;
+  } 
   else{
-    agg_results.results = buildAggResults(json.results, {}, params);
-    agg_results.raw_total = json.results.length;
+    agg_results.results = buildAggResults(results, {}, params);
+    if (has(results, 'i94')) agg_results.i94_total = results.i94.results.length;
+    if (has(results, 'i92')) agg_results.i92_total = results.i92.results.length;
   }
 
   // Fetch next batch of results if needed:
-  if(agg_results.raw_total < json.total){
-    return fetchAggResults(querystring, params, offset+100, agg_results);
+  if(has(results, 'i94') && agg_results.i94_total < results.i94.total &&
+    has(results, 'i92') && agg_results.i92_total < results.i92.total){
+    return fetchAggResults(querystring, params, offset+100, agg_results, apis);
+  }
+  else if(has(results, 'i94') && agg_results.i94_total < results.i94.total){
+    apis = omit(apis, 'i92');
+    return fetchAggResults(querystring, params, offset+100, agg_results, apis);
+  }
+  else if(has(results, 'i92') && agg_results.i92_total < results.i92.total){
+    apis = omit(apis, 'i94');
+    return fetchAggResults(querystring, params, offset+100, agg_results, apis);
   }
 
-  agg_results.results = buildReports(agg_results.results, params);
-
-  return receiveAggResults(agg_results.results);
+  //agg_results.results = buildReports(agg_results.results, params);
+  return receiveAggResults(values(agg_results.results));
 }
 
-const { host, apiKey } = config.api.i94;
+const { i94_url, i92_url, apiKey } = config.api;
+
 function fetchResults(querystring) {
   return (dispatch) => {
     dispatch(requestResults(querystring));
-    return fetch(`${host}?api_key=${apiKey}&${querystring}`)
+    return fetch(`${i92_url}?api_key=${apiKey}&${querystring}`)
       .then(response => response.json())
       .then(json => dispatch(receiveResults(json)));
   };
 }
 
-function fetchAggResults(querystring, params, offset = 0, aggregated_results = {}) {
+function fetchAggResults(querystring, params, offset = 0, aggregated_results = {}, apis = {}) {
   return (dispatch) => {
     dispatch(requestAggResults(querystring));
-    return fetch(`${host}?api_key=${apiKey}&size=100&offset=${offset}&${querystring}`)
-      .then(response => response.json())
-      .then(json => dispatch(aggregateResults(json, querystring, params, offset, aggregated_results)));
+
+    var requests = values(apis).map( function(api){
+      return sendRequest(api, querystring, offset);
+    });
+    return Promise.all(requests)
+      .then(response => ( Promise.all(response.map( function(api_result){
+        return api_result.json()
+      }))))
+      .then(json => dispatch(aggregateResults(json, querystring, params, offset, aggregated_results, apis)));
   };
+}
+
+function sendRequest(api, querystring, offset){
+  return fetch(`${api}?api_key=${apiKey}&size=100&offset=${offset}&${querystring}`)
 }
 
 function shouldFetchResults(state) {
@@ -130,7 +157,8 @@ export function fetchAggResultsIfNeeded(params) {
       return dispatch(receiveAggResults([]));
     }
     else {
-      return dispatch(fetchAggResults(buildQueryString(params), params, 0, {}));
+      var apis = {i94: i94_url, i92: i92_url};
+      return dispatch(fetchAggResults(buildQueryString(params), params, 0, {}, apis));
     }
 
     return Promise.resolve([]);
