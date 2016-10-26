@@ -9,11 +9,13 @@ const ResultCountLabel = ({ count, query }) => {
   let text = '';
   if (!isEmpty(omit(query, ['offset', 'sort', 'percent_change']))) {
     if (count === 0) text = 'No results.';
-    else if (count === 1) text = `${count} report found.`;
+    else if (count === 1) text = ` report found.`;
     else if (count >= 10000) text = 'Too many results, enter more terms to narrow search.';
-    else text = `${count} reports found.`;
+    else text = ` reports found.`;
   }
-  return <p className="result-count-label">{text}</p>;
+  if (text == '') count = '';
+  
+  return <p className="result-count-label"><div className="result-count">{count}</div>{text}</p>;
 };
 ResultCountLabel.propTypes = {
   count: PropTypes.number.isRequired,
@@ -29,7 +31,7 @@ const TimeFrameLabel = ({ query }) => {
     var time_frame = "no time frame specified";
   let text = 'Enter a search term in one of the form fields and click "Generate Reports".';
   if (!isEmpty(omit(query, ['offset', 'sort', 'percent_change']))) {
-    text = `I-94 Arrivals for:  ${time_frame}.`;
+    text = `Travel Data for:  ${time_frame}.`;
   }
   return <p className="explorer__result__label">{text}</p>;
 };
