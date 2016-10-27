@@ -94,11 +94,14 @@ const Form = ({
         description="Choose a range of months to filter arrivals data."
       />
 
-      <div className="explorer__form__group">
-        <button className="explorer__form__submit pure-button pure-button-primary" onClick={handleSubmit}>
+      <div className="explorer__form__submit">
+        <button className="explorer__form__submit-button pure-button pure-button-primary" onClick={handleSubmit}>
           <i className="fa fa-paper-plane" /> Generate Reports
         </button>
+              <a className="explorer__form__advanced-link" href="https://sod-trade.cs32.force.com/i94_search">I-94 Arrivals Advanced Search</a>
+
       </div>
+
     </fieldset>
   </form>
 );

@@ -41,6 +41,8 @@ TimeFrameLabel.propTypes = {
 
 const AggregatedResult = ({ onPaging, query = {}, results }) => {
   if (results.isFetchingAggs) return null;
+  if (results.error != "") 
+    return (<div className="explorer__result">{results.error}</div>);
 
   const items = map(results.pageItems, result => {
     const key = result.country ? result.country : result.i94_country_or_region;

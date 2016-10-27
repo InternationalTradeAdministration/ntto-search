@@ -15,31 +15,38 @@ const Detail = ({ result, visibleFields }) => {
           <UnorderedList value={result.world_region} />
         </Row>
 
-        <Row label="Total Arrivals">
+        <Row label="Total Arrivals">{result.total_arrivals_sum.toLocaleString()}</Row>
+        <Row label="Total Arrivals by Month">
           <MonthlyAmountsList value={result.total_arrivals} />
         </Row>
 
-        <Row label="Business Visa Arrivals">
+        <Row label="Business Visa Arrivals">{result.business_visa_arrivals_sum.toLocaleString()}</Row>
+        <Row label="Business Visa Arrivals by Month">
           <MonthlyAmountsList value={result.business_visa_arrivals} />
         </Row>
 
-        <Row label="Pleasure Visa Arrivals">
+        <Row label="Pleasure Visa Arrivals">{result.pleasure_visa_arrivals_sum.toLocaleString()}</Row>
+        <Row label="Pleasure Visa Arrivals by Month">
           <MonthlyAmountsList value={result.pleasure_visa_arrivals} />
         </Row>
 
-        <Row label="Student Visa Arrivals">
+        <Row label="Student Visa Arrivals">{result.student_visa_arrivals_sum.toLocaleString()}</Row>
+        <Row label="Student Visa Arrivals by Month">
           <MonthlyAmountsList value={result.student_visa_arrivals} />
         </Row>
 
-        <Row label="Arrivals by Ports of Entry">
+        <Row label="Ports of Entry Arrivals">
+          <PortsAmounts value={result.ports_arrivals_sums} />
+        </Row>
+        <Row label="Ports of Entry Arrivals by Month">
           <PortsList value={result.ports_arrivals} />
         </Row>
 
-        <Row label="I-92 Arrivals">
+        <Row label="I-92 Arrivals by Month">
           <I92List value={result.i92_arrivals} />
         </Row>
 
-        <Row label="I-92 Departures">
+        <Row label="I-92 Departures by Month">
           <I92List value={result.i92_departures} />
         </Row>
 

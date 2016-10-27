@@ -3,25 +3,12 @@ import { stringify } from 'querystring';
 import { isEmpty, omit, values, map, forEach, has} from '../utils/lodash';
 import { buildAggResults } from './build_agg_results.js';
 import { buildReports } from './build_reports.js';
-import { REQUEST_RESULTS, REQUEST_AGG_RESULTS, RECEIVE_RESULTS, RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS, SET_VISIBLE_FIELDS } from 'constants';
+import { REQUEST_AGG_RESULTS, RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS, SET_VISIBLE_FIELDS } from 'constants';
 import config from '../config.js';
-
-export function requestResults() {
-  return {
-    type: REQUEST_RESULTS,
-  };
-}
 
 export function requestAggResults() {
   return {
     type: REQUEST_AGG_RESULTS,
-  };
-}
-
-export function receiveResults(payload) {
-  return {
-    type: RECEIVE_RESULTS,
-    payload,
   };
 }
 
@@ -58,21 +45,14 @@ function aggregateResults(json, querystring, params, offset, agg_results, apis) 
   var count = 0;
   for (var key in apis){
     // 10k is the max offset that can be reached in Elasticsearch:
-    if (json[count].total >= 10000) return receiveAggResults([]);
+    if (json[count].total >= 10000) return receiveFailure('Too many results, enter more search terms to narrow search.');
     results[key] = json[count];
     count += 1;
   }
     
-  if(has(agg_results, 'results')){
-    agg_results.results = buildAggResults(results, agg_results.results, params);
-    if (has(results, 'i94')) agg_results.i94_total += results.i94.results.length;
-    if (has(results, 'i92')) agg_results.i92_total += results.i92.results.length;
-  } 
-  else{
-    agg_results.results = buildAggResults(results, {}, params);
-    if (has(results, 'i94')) agg_results.i94_total = results.i94.results.length;
-    if (has(results, 'i92')) agg_results.i92_total = results.i92.results.length;
-  }
+  agg_results.results = buildAggResults(results, agg_results.results, params);
+  if (has(results, 'i94')) agg_results.i94_total += results.i94.results.length;
+  if (has(results, 'i92')) agg_results.i92_total += results.i92.results.length;
 
   // Fetch next batch of results if needed:
   if(has(results, 'i94') && agg_results.i94_total < results.i94.total &&
@@ -88,20 +68,12 @@ function aggregateResults(json, querystring, params, offset, agg_results, apis) 
     return fetchAggResults(querystring, params, offset+100, agg_results, apis);
   }
 
-  //agg_results.results = buildReports(agg_results.results, params);
+  agg_results.results = buildReports(agg_results.results, params);
+
   return receiveAggResults(values(agg_results.results));
 }
 
 const { i94_url, i92_url, apiKey } = config.api;
-
-function fetchResults(querystring) {
-  return (dispatch) => {
-    dispatch(requestResults(querystring));
-    return fetch(`${i92_url}?api_key=${apiKey}&${querystring}`)
-      .then(response => response.json())
-      .then(json => dispatch(receiveResults(json)));
-  };
-}
 
 function fetchAggResults(querystring, params, offset = 0, aggregated_results = {}, apis = {}) {
   return (dispatch) => {
@@ -139,16 +111,6 @@ function buildQueryString(params) {
   return stringify(omit(params, ['start_date', 'end_date', 'percent_change', 'visible_fields', 'sort']));
 }
 
-export function fetchResultsIfNeeded(params) {
-  return (dispatch, getState) => {
-    if (shouldFetchResults(getState())) {
-      return dispatch(fetchResults(buildQueryString(params)));
-    }
-
-    return Promise.resolve([]);
-  };
-}
-
 export function fetchAggResultsIfNeeded(params) {
   return (dispatch, getState) => {
     params.sort = params.sort ? params.sort : ""
@@ -156,9 +118,10 @@ export function fetchAggResultsIfNeeded(params) {
     if (isEmpty(omit(params, ['sort', 'offset', 'size', 'percent_change', 'visible_fields']))) {
       return dispatch(receiveAggResults([]));
     }
-    else {
+    else if(shouldFetchResults(getState())) {
       var apis = {i94: i94_url, i92: i92_url};
-      return dispatch(fetchAggResults(buildQueryString(params), params, 0, {}, apis));
+      var agg_results = {results: []}
+      return dispatch(fetchAggResults(buildQueryString(params), params, 0, agg_results, apis));
     }
 
     return Promise.resolve([]);

@@ -1,7 +1,7 @@
 import { values, capitalize, compact, has, map } from '../utils/lodash';
 
 export function buildAggResults(raw_results, agg_results, params) {
-
+  // Iterate i94 and i92 sequentialy: 
   for (var k in raw_results) {
     var entries = raw_results[k].results;
 
@@ -17,41 +17,49 @@ export function buildAggResults(raw_results, agg_results, params) {
       }
 
       // Add date-amount k-v's to agg entry:
-      if (k == 'i94'){
-        agg_results[key].total_arrivals[entry.date] = entry.total_arrivals;
-        if ( entry.business_visa_arrivals != null )
-          agg_results[key].business_visa_arrivals[entry.date] = entry.business_visa_arrivals;
-        if ( entry.pleasure_visa_arrivals != null )
-          agg_results[key].pleasure_visa_arrivals[entry.date] = entry.pleasure_visa_arrivals;
-        if ( entry.student_visa_arrivals != null )
-          agg_results[key].student_visa_arrivals[entry.date] = entry.student_visa_arrivals;
-        if ( entry.ports_arrivals.length > 0 )
-          agg_results[key].ports_arrivals[entry.date] = entry.ports_arrivals;
-      }
-
-      if (k == 'i92'){
-        if (entry.event_type == 'Arrival'){
-          if (!has(agg_results[key].i92_arrivals, entry.foreign_port + ' to ' + entry.us_port))
-            agg_results[key].i92_arrivals[entry.foreign_port + ' to ' + entry.us_port] = {};
-
-          agg_results[key].i92_arrivals[entry.foreign_port + ' to ' + entry.us_port][entry.date] = i92Entry(entry);
-        }
-
-        if (entry.event_type == 'Departure'){
-          if (!has(agg_results[key].i92_departures, entry.us_port + ' to ' + entry.foreign_port))
-            agg_results[key].i92_departures[entry.us_port + ' to ' + entry.foreign_port] = {};
-
-          agg_results[key].i92_departures[entry.us_port + ' to ' + entry.foreign_port][entry.date] = i92Entry(entry);
-        }
-      }
-
+      if (k == 'i94')
+        agg_results[key] = processI94(agg_results[key], entry);
+      if (k == 'i92')
+        agg_results[key] = processI92(agg_results[key], entry);
     }
   }
   return agg_results;
 }
 
+function processI94(agg_entry, raw_entry){
+  agg_entry.total_arrivals[raw_entry.date] = raw_entry.total_arrivals;
+  if ( raw_entry.business_visa_arrivals != null )
+    agg_entry.business_visa_arrivals[raw_entry.date] = raw_entry.business_visa_arrivals;
+  if ( raw_entry.pleasure_visa_arrivals != null )
+    agg_entry.pleasure_visa_arrivals[raw_entry.date] = raw_entry.pleasure_visa_arrivals;
+  if ( raw_entry.student_visa_arrivals != null )
+    agg_entry.student_visa_arrivals[raw_entry.date] = raw_entry.student_visa_arrivals;
+  if ( raw_entry.ports_arrivals.length > 0 )
+    agg_entry.ports_arrivals[raw_entry.date] = raw_entry.ports_arrivals;
+
+  return agg_entry;
+}
+
+function processI92(agg_entry, raw_entry){
+  if (raw_entry.event_type == 'Arrival'){
+    if (!has(agg_entry.i92_arrivals, raw_entry.foreign_port + ' to ' + raw_entry.us_port))
+      agg_entry.i92_arrivals[raw_entry.foreign_port + ' to ' + raw_entry.us_port] = {};
+
+    agg_entry.i92_arrivals[raw_entry.foreign_port + ' to ' + raw_entry.us_port][raw_entry.date] = i92Entry(raw_entry);
+  }
+
+  if (raw_entry.event_type == 'Departure'){
+    if (!has(agg_entry.i92_departures, raw_entry.us_port + ' to ' + raw_entry.foreign_port))
+      agg_entry.i92_departures[raw_entry.us_port + ' to ' + raw_entry.foreign_port] = {};
+
+    agg_entry.i92_departures[raw_entry.us_port + ' to ' + raw_entry.foreign_port][raw_entry.date] = i92Entry(raw_entry);
+  }
+
+  return agg_entry;
+}
+
 function buildNewEntry(entry){
-  var return_hash = {
+  return {
     i94_country_or_region: entry.i94_country_or_region,
     ntto_group: entry.ntto_group,
     country: entry.country,
@@ -64,8 +72,6 @@ function buildNewEntry(entry){
     i92_arrivals: {},
     i92_departures: {}
   }
-
-  return return_hash;
 }
 
 function i92Entry(entry){

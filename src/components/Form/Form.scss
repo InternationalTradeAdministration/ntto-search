@@ -13,6 +13,17 @@
   }
 
   &__submit {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  &__submit-button {
+    display: inline-block;
+    margin-left: 100px;
+  }
+
+  &__advanced-link {
+    display: inline-block;
     float: right;
   }
 

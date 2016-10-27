@@ -1,38 +1,25 @@
 import 'babel-polyfill';
-import { REQUEST_RESULTS, RECEIVE_RESULTS, RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS, REQUEST_AGG_RESULTS, SET_VISIBLE_FIELDS } from 'constants';
+import { RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS, REQUEST_AGG_RESULTS, SET_VISIBLE_FIELDS } from 'constants';
 
 export function results(state = {
-  isFetching: false,
   isFetchingAggs: false,
-  items: [],
   aggregatedItems: [],
   pageItems: [],
   offset: 0,
   invalidated: false,
-  total: 0,
   visibleFields: [],
+  error: ""
 }, action) {
   switch (action.type) {
-  case REQUEST_RESULTS:
-    return Object.assign({}, state, {
-      isFetching: true,
-      invalidated: false,
-    });
   case REQUEST_AGG_RESULTS:
     return Object.assign({}, state, {
+      error: "",
       isFetchingAggs: true,
       invalidated: false,
     });
-  case RECEIVE_RESULTS:
-    return Object.assign({}, state, {
-      isFetching: false,
-      invalidated: false,
-      items: action.payload.results,
-      total: action.payload.total,
-    });
   case RECEIVE_FAILURE:
     return Object.assign({}, state, {
-      isFetching: false,
+      isFetchingAggs: false,
       invalidated: false,
       error: action.error,
     });
