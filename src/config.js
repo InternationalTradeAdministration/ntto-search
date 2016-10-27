@@ -10,9 +10,9 @@ const config = Object.assign({
   },
   production: {
     api: {
-      i94_url: 'https://api.govwizely.com/v1/i94_monthly_data/search',
-      i92_url: 'https://api.govwizely.com/v1/i92_entries/search',
-      apiKey: 'Z48wSr3E3nNN4itDUvE4Clje',
+      i94_url: 'https://api.trade.gov/v1/i94_monthly_data/search',
+      i92_url: 'https://api.trade.gov/v1/i92_entries/search',
+      apiKey: 'O6fmOIPtrvDlqoDe2_6UbKJc',
     },
   },
 });
