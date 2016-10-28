@@ -14,17 +14,13 @@
 
   &__submit {
     margin-top: 10px;
+    display: block;
     text-align: center;
   }
 
-  &__submit-button {
-    display: inline-block;
-    margin-left: 100px;
-  }
-
   &__advanced-link {
-    display: inline-block;
-    float: right;
+    margin-top: 10px;
+    display: block;
   }
 
   &__group {
