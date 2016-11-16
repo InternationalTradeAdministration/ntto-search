@@ -12,3 +12,4 @@ export capitalize from 'lodash/capitalize';
 export has from 'lodash/has';
 export forEach from 'lodash/forEach';
 export startCase from 'lodash/startCase';
+export pick from 'lodash/pick';

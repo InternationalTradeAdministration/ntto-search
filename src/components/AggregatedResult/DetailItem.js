@@ -1,5 +1,6 @@
-import { compact, get, isEmpty, map, startCase } from '../../utils/lodash';
-import React, { PropTypes } from 'react';
+import { compact, get, isEmpty, map, startCase, pick } from '../../utils/lodash';
+import React, { Component, PropTypes } from 'react';
+import ReactList from 'react-list';
 import moment from 'moment';
 
 const isValidArray = (value) => (value && Array.isArray(value) && value.length);
@@ -104,19 +105,40 @@ const PortsPercentages = ({value}) => {
 };
 PortsAmounts.propTypes = { value: PropTypes.array };
 
-const I92List = ({value}) => {
-  const items = compact(map(value, (v, k) => {
-    return(
-    <li key={k}>
-      {k}:  <I92Table value={v} />
-    </li>
-    );
-  }));
-  if (isEmpty(items)) return null;
 
-  return <ul className="explorer__result-ports_amounts">{items}</ul>;
-};
-I92List.propTypes = { value: PropTypes.object };
+class I92List extends React.Component {
+  static propTypes = {
+    value: PropTypes.object,
+  }
+
+  state = { items: [] };
+
+  componentWillMount() {
+    const items = compact(map(this.props.value, (v, k) => {
+      return(
+      <li key={k}>
+        {k}:  <I92Table value={v} />
+      </li>
+      );
+    }));
+    this.setState({items});
+  }
+
+  renderItem(index, key) {
+    return this.state.items[index];
+  }
+
+  render() {
+    return (
+      <div className="explorer__result-i92_amounts">
+        <ReactList
+          itemRenderer={::this.renderItem}
+          length={this.state.items.length}
+        />
+      </div>
+    );
+  }
+}
 
 const I92Table = ({value}) => {
   const items = compact(map(value, (v, k) => {
@@ -146,7 +168,6 @@ const I92Amounts = ({value}) => {
   return <ul className="explorer__result-i92_amounts">{items}</ul>;
 };
 I92Amounts.propTypes = { value: PropTypes.object };
-
 
 export {
   Link,

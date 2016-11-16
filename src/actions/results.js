@@ -51,6 +51,7 @@ function aggregateResults(json, querystring, params, offset, agg_results, apis) 
   }
     
   agg_results.results = buildAggResults(results, agg_results.results, params);
+
   if (has(results, 'i94')) agg_results.i94_total += results.i94.results.length;
   if (has(results, 'i92')) agg_results.i92_total += results.i92.results.length;
 
@@ -120,7 +121,7 @@ export function fetchAggResultsIfNeeded(params) {
     }
     else if(shouldFetchResults(getState())) {
       var apis = {i94: i94_url, i92: i92_url};
-      var agg_results = {results: []}
+      var agg_results = { results: [], i94_total: 0, i92_total: 0 }
       return dispatch(fetchAggResults(buildQueryString(params), params, 0, agg_results, apis));
     }
 
