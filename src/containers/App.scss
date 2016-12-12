@@ -6,6 +6,10 @@
   text-align: left;
   max-width: 971px;
 
+  .heading-list {
+    list-style-type: none;
+  }
+
   &__content {
     font-family: Verdana;
     margin: 0 58.5px;

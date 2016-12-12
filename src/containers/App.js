@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { camelCase, isEmpty, map, omit, omitBy, reduce, snakeCase } from '../utils/lodash';
 import { stringify } from 'querystring';
-import { Form, Spinner, AggregatedResult } from '../components';
+import { Form, Spinner, AggregatedResult, HeadingDropdown } from '../components';
 import { fetchAggResultsIfNeeded, pageResults, setVisibleFields } from '../actions';
 import './App.scss';
 
@@ -49,9 +49,7 @@ class App extends Component {
     return (
       <div className="explorer">
         <h1 className="Header-1"><b>National Travel and Tourism Office (NTTO) Travel Data</b></h1>
-        <p className="DefaultParagraph-1">
-          Search for travel data and generate reports for each country or region in the results.  I-94 results show all international arrivals for a given country and month.  APIS (formerly I-92) results show air-only departures and arrivals between specific foreign and domestic ports for a given month.
-         </p>
+        <HeadingDropdown />
 
         <div className="explorer__content">
 
