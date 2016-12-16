@@ -1,16 +1,34 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 
+import {RadioGroup, Radio} from 'react-radio-group'
+import FormMessages from 'redux-form-validation';
+import {generateValidation} from 'redux-form-validation';
+
 import countryList from '../../fixtures/countries';
 import worldRegionsList from '../../fixtures/world_regions';
-import sortList from '../../fixtures/sort';
-import nttoGroupsList from '../../fixtures/ntto_groups';
-import percentChangeList from '../../fixtures/percent_change';
-import visibleFieldsList from '../../fixtures/visible_fields';
 import './Form.scss';
+
+ var validations = {
+     startDate: {
+       required: true
+     },
+    endDate: {
+       required: true
+     },
+     selectOptions: {
+      required: false
+     },
+    countries: {
+      required: false
+     },
+    worldRegions: {
+      required: false
+     }
+   };
 
 const TextField = ({ description, field, label }) => (
   <div className="explorer__form__group">
@@ -71,45 +89,116 @@ DateRangeField.propTypes = {
   startDate: PropTypes.object.isRequired,
 };
 
+const CountriesField = ({field}) => (
+  <SelectField
+    field={field} label="All Countries" options={countryList} multi
+    description="Choose one or more countries to search."
+  />
+)
 
-const Form = ({
-  fields: { q, countries, worldRegions, startDate, endDate, sort, nttoGroups, percentChange, visibleFields },
-  handleSubmit,
-}) => (
-  <form className="explorer__form" onSubmit={handleSubmit}>
-    <fieldset>
-      <SelectField
-        field={countries} label="All Countries (Overseas, Canada, Mexico)" options={countryList} multi
-        description="Choose which countries that you want to search."
-      />
-      <SelectField
-        field={worldRegions} label="ITA World Regions" options={worldRegionsList} multi
-        description="Choose which world regions you want to search."
-      />
+const WorldRegionsField = ({field}) => (
+  <SelectField
+    field={field} label="ITA World Regions" options={worldRegionsList} multi
+    description="Choose one or more world regions to search."
+  />
+)
 
-      <DateRangeField
-        startDate={startDate}
-        endDate={endDate}
-        label="Date"
-        description="Choose a range of months to filter arrivals data."
-      />
 
-      <div className="explorer__form__submit">
-        <button className="explorer__form__submit-button pure-button pure-button-primary" onClick={handleSubmit}>
-          <i className="fa fa-paper-plane" /> Generate Reports
-        </button>
-        <a className="explorer__form__advanced-link" href="https://sod-trade.cs32.force.com/i94_search">I-94 Arrivals Advanced Search</a>
+class Form extends Component {
+  static propTypes = {
+    fields: PropTypes.object.isRequired,
+    handleSubmit: PropTypes.func.isRequired
+  }
 
-      </div>
+  constructor(props) {
+    super(props);
+    this.state = {selectField: 'countries'};
+    this.handleChange = this.handleChange.bind(this);
+  }
 
-    </fieldset>
-  </form>
-);
+  handleChange(value) {
+    this.setState({selectField: value});
+  }
+
+  render() {
+    const { 
+      fields: { selectOptions, countries, worldRegions, startDate, endDate }, 
+      handleSubmit 
+    } = this.props;
+
+    var selectField;
+    if (selectOptions.value == 'countries' || selectOptions.value === ''){
+      validations.countries = {required: true}
+      validations.worldRegions = {required: false}
+      selectField = <CountriesField field={countries} />;
+    }
+    else if (selectOptions.value == 'worldRegions'){
+      validations.countries = {required: false}
+      validations.worldRegions = {required: true}
+      selectField =  <WorldRegionsField field={worldRegions}/>;
+    }
+
+    return (
+      <form className="explorer__form" onSubmit={handleSubmit}>
+        <fieldset>
+          <div className="explorer__form__group">
+            <label>Select an option to search by Countries or World Regions</label>
+            <RadioGroup name='selectOptions' selectedValue={selectOptions.value ? selectOptions.value : 'countries'}>
+              <Radio {...selectOptions} value="countries" /> Countries
+              <Radio {...selectOptions} value="worldRegions" /> World Regions
+            </RadioGroup>
+          </div>
+
+          {selectField}
+
+          <FormMessages field={countries} >
+               <p className="validation-error" when="required">
+                 Must enter at least one country.
+               </p>
+          </FormMessages>
+          <FormMessages field={worldRegions} >
+               <p className="validation-error" when="required">
+                 Must enter at least one world region.
+               </p>
+          </FormMessages>
+
+          <DateRangeField
+            startDate={startDate}
+            endDate={endDate}
+            label="Date"
+            description="Choose a range of months to filter arrivals data."
+          />
+
+          <FormMessages field={startDate} >
+               <p className="validation-error" when="required">
+                 Must enter a starting month.
+               </p>
+          </FormMessages>
+          <FormMessages field={endDate} >
+               <p className="validation-error" when="required">
+                 Must enter an ending month.
+               </p>
+          </FormMessages>
+
+          <div className="explorer__form__submit">
+            <button className="explorer__form__submit-button pure-button pure-button-primary" onClick={handleSubmit}>
+              <i className="fa fa-paper-plane" /> Generate Reports
+            </button>
+            <a className="explorer__form__advanced-link" href="https://sod-trade.cs32.force.com/i94_search">I-94 Arrivals Advanced Search</a>
+          </div>
+
+        </fieldset>
+      </form>
+    );
+  }
+}
 Form.propTypes = {
   fields: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
 };
+
 export default reduxForm({
   form: 'form',
-  fields: ['q', 'countries', 'worldRegions', 'startDate', 'endDate', 'sort', 'nttoGroups', 'percentChange', 'visibleFields'],
+  fields: ['selectOptions', 'countries', 'worldRegions', 'startDate', 'endDate'],
+  ...generateValidation(validations)
 })(Form);

@@ -3,7 +3,7 @@ import { stringify } from 'querystring';
 import { isEmpty, omit, values, map, forEach, has} from '../utils/lodash';
 import { buildAggResults } from './build_agg_results.js';
 import { buildReports } from './build_reports.js';
-import { REQUEST_AGG_RESULTS, RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS, SET_VISIBLE_FIELDS } from 'constants';
+import { REQUEST_AGG_RESULTS, RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS } from 'constants';
 import config from '../config.js';
 
 export function requestAggResults() {
@@ -30,13 +30,6 @@ export function receiveAggResults(payload) {
   return {
     type: RECEIVE_AGG_RESULTS,
     payload,
-  };
-}
-
-export function setVisibleFields(visible_fields){
-  return {
-    type: SET_VISIBLE_FIELDS,
-    visible_fields,
   };
 }
 
@@ -109,14 +102,12 @@ function buildQueryString(params) {
   if (params.start_date && params.end_date) {
     Object.assign(params, { date: params.start_date + "-01" + " TO " + params.end_date + "-01" });
   }
-  return stringify(omit(params, ['start_date', 'end_date', 'percent_change', 'visible_fields', 'sort']));
+  return stringify(omit(params, ['start_date', 'end_date']));
 }
 
 export function fetchAggResultsIfNeeded(params) {
   return (dispatch, getState) => {
-    params.sort = params.sort ? params.sort : ""
-    params.percent_change = params.percent_change ? params.percent_change : ""
-    if (isEmpty(omit(params, ['sort', 'offset', 'size', 'percent_change', 'visible_fields']))) {
+    if (isEmpty(omit(params, ['offset', 'size']))) {
       return dispatch(receiveAggResults([]));
     }
     else if(shouldFetchResults(getState())) {

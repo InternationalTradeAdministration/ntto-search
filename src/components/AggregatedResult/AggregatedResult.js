@@ -7,7 +7,7 @@ import moment from 'moment';
 
 const ResultCountLabel = ({ count, query }) => {
   let text = '';
-  if (!isEmpty(omit(query, ['offset', 'sort', 'percent_change']))) {
+  if (!isEmpty(omit(query, ['offset', 'size']))) {
     if (count === 0) text = 'No results.';
     else if (count === 1) text = ` report found.`;
     else if (count >= 10000) text = 'Too many results, enter more terms to narrow search.';
@@ -30,7 +30,7 @@ const TimeFrameLabel = ({ query }) => {
   else
     var time_frame = "no time frame specified";
   let text = '';
-  if (!isEmpty(omit(query, ['offset', 'sort', 'percent_change']))) {
+  if (!isEmpty(omit(query, ['offset', 'size']))) {
     text = `Travel Data for:  ${time_frame}.`;
   }
   return <p className="explorer__result__label">{text}</p>;
@@ -46,7 +46,7 @@ const AggregatedResult = ({ onPaging, query = {}, results }) => {
 
   const items = map(results.pageItems, result => {
     const key = result.country ? result.country : result.i94_country_or_region;
-    return <Item key={key} result={result} visibleFields={results.visibleFields}/>
+    return <Item key={key} result={result} />
   });
 
   const pagesProps = {

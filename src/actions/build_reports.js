@@ -2,10 +2,8 @@ import { values, capitalize, compact, has, map, snakeCase } from '../utils/lodas
 import { buildPortsValues } from './build_ports_values.js';
 
 export function buildReports(agg_results, params){
-
   for (var key in agg_results) {
     var entry = Object.assign(agg_results[key], EMPTY_RECORD);
-
     var arrivals_keys = ["total_arrivals", "business_visa_arrivals", "pleasure_visa_arrivals", "student_visa_arrivals", "ports_arrivals"];
 
     entry = populateAdditionalFields(arrivals_keys, entry);
@@ -13,11 +11,10 @@ export function buildReports(agg_results, params){
     if( has(entry, 'ports_arrivals')) // Add ports fields
       agg_results[key] = Object.assign(entry, buildPortsValues(entry.ports_arrivals));
   }
-
   return agg_results;
 }
 
-function populateAdditionalFields(arrivals_keys, entry, percent_change){
+function populateAdditionalFields(arrivals_keys, entry){
   for (var i in arrivals_keys) {
     var arrivals_type = arrivals_keys[i];
     if (arrivals_type == "ports_arrivals") continue; // Ports fields need custom treatment

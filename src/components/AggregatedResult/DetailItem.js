@@ -41,7 +41,6 @@ const Row = ({ label, children }) => {
 };
 Row.propTypes = { label: PropTypes.string.isRequired, children: PropTypes.any };
 
-
 const MonthlyAmountsList = ({ value }) => {
   if (typeof value != 'object') return null;
 
@@ -60,7 +59,6 @@ const MonthlyAmountsList = ({ value }) => {
 };
 MonthlyAmountsList.propTypes = { value: PropTypes.object };
 
-
 const PortsList = ({value}) => {
   const items = compact(map(value, (v, k) => {
     return(
@@ -76,7 +74,6 @@ const PortsList = ({value}) => {
 };
 PortsList.propTypes = { value: PropTypes.object };
 
-
 const PortsAmounts = ({value}) => {
   const items = compact(map(value, (item, i) => {
     return(
@@ -90,21 +87,6 @@ const PortsAmounts = ({value}) => {
   return <ul className="explorer__result-ports_amounts">{items}</ul>;
 };
 PortsAmounts.propTypes = { value: PropTypes.array };
-
-const PortsPercentages = ({value}) => {
-  const items = compact(map(value, (item, i) => {
-    return(
-    <li key={i}>
-      {item['port']}:  {item['amount']}
-    </li>
-    );
-  }));
-  if (isEmpty(items)) return null;
-
-  return <ul className="explorer__result-ports_amounts">{items}</ul>;
-};
-PortsAmounts.propTypes = { value: PropTypes.array };
-
 
 class I92List extends React.Component {
   static propTypes = {
@@ -177,6 +159,5 @@ export {
   MonthlyAmountsList,
   PortsList,
   PortsAmounts,
-  PortsPercentages,
   I92List
 };

@@ -15,7 +15,7 @@ function sortPortsArrivals(ports_arrivals){
   return ports_arrivals
 }
 
-function populateAdditionalFields(ports_arrivals, percent_change){
+function populateAdditionalFields(ports_arrivals){
   var ports_arrivals_sums = {};
   var return_hash = {};
 

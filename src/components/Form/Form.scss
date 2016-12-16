@@ -1,6 +1,10 @@
 @import "./Select.scss";
 @import "./month-picker/MonthPicker.min.css";
 
+.validation-error {
+  color: red;
+}
+
 .explorer__form {
   font-size: 11px;
   margin: 28px 0;
