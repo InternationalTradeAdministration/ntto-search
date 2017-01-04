@@ -151,6 +151,36 @@ const I92Amounts = ({value}) => {
 };
 I92Amounts.propTypes = { value: PropTypes.object };
 
+const SpendingDataTable = ({value}) => {
+  const items = compact(map(value, (v, k) => {
+    return(
+    <tr key={k}>
+      <td className="ports-cell">{moment(k, 'YYYY').utc().format('YYYY')}</td>
+      <td className="ports-cell"> <SpendingDataAmountsList value={v} /> </td>
+    </tr>
+    );
+  }));
+  if (isEmpty(items)) return null;
+
+  return <table className="explorer__result-ports_list"><tbody>{items}</tbody></table>;
+};
+SpendingDataTable.propTypes = { value: PropTypes.object };
+
+const SpendingDataAmountsList = ({value}) => {
+  const items = compact(map(value, (v, k) => {
+    return(
+    <li key={k}>
+      {startCase(k)}:  {v.toLocaleString()}
+    </li>
+    );
+  }));
+  if (isEmpty(items)) return null;
+
+  return <ul className="explorer__result-ports_amounts">{items}</ul>;
+};
+SpendingDataAmountsList.propTypes = { value: PropTypes.object };
+
+
 export {
   Link,
   ListItem,
@@ -159,5 +189,6 @@ export {
   MonthlyAmountsList,
   PortsList,
   PortsAmounts,
-  I92List
+  I92List,
+  SpendingDataTable
 };

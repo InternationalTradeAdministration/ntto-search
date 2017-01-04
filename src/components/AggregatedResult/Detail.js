@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Row, UnorderedList, MonthlyAmountsList, PortsList, PortsAmounts, PortsPercentages, I92List } from './DetailItem';
+import { Row, UnorderedList, MonthlyAmountsList, PortsList, PortsAmounts, PortsPercentages, I92List, SpendingDataTable } from './DetailItem';
 
 const Detail = ({ result }) => {
 
@@ -48,6 +48,10 @@ const Detail = ({ result }) => {
 
         <Row label="I-92 Departures by Month">
           <I92List value={result.i92_departures} />
+        </Row>
+
+        <Row label="Spending Data (Millions of Dollars)">
+          <SpendingDataTable value={result.spending_data} />
         </Row>
 
       </tbody>

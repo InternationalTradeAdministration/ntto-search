@@ -1,4 +1,4 @@
-import { values, capitalize, compact, has, map } from '../utils/lodash';
+import { values, capitalize, compact, has, map, omit } from '../utils/lodash';
 
 export function buildAggResults(raw_results, agg_results, params) {
   // Iterate i94 and i92 sequentialy: 
@@ -10,6 +10,7 @@ export function buildAggResults(raw_results, agg_results, params) {
       var key = entry.country;
       if(!key) key = entry.i94_country_or_region;
       if(!key) key = entry.country_name;
+      if(!key) key = entry.country_or_region;
 
       if ( !has(agg_results, key) ) {
         // Build initial agg entry if it doesn't exist yet:
@@ -21,6 +22,8 @@ export function buildAggResults(raw_results, agg_results, params) {
         agg_results[key] = processI94(agg_results[key], entry);
       if (k == 'i92')
         agg_results[key] = processI92(agg_results[key], entry);
+      if (k == 'spending_data')
+        agg_results[key] = processSpendingData(agg_results[key], entry);
     }
   }
   return agg_results;
@@ -58,6 +61,11 @@ function processI92(agg_entry, raw_entry){
   return agg_entry;
 }
 
+function processSpendingData(agg_entry, raw_entry){
+  agg_entry.spending_data[raw_entry.date] = omit(raw_entry, ['date', 'country', 'id', 'country_or_region', 'world_region']);
+  return agg_entry;
+}
+
 function buildNewEntry(entry){
   return {
     i94_country_or_region: entry.i94_country_or_region,
@@ -70,7 +78,8 @@ function buildNewEntry(entry){
     student_visa_arrivals: {},
     ports_arrivals: {},
     i92_arrivals: {},
-    i92_departures: {}
+    i92_departures: {},
+    spending_data: {}
   }
 }
 
