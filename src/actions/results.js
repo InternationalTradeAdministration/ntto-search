@@ -56,9 +56,7 @@ function aggregateResults(json, querystring, params, offset, agg_results, apis) 
 
   if (!isEmpty(apis)) return fetchAggResults(querystring, params, offset+100, agg_results, apis);
 
-  
   agg_results.results = buildReports(agg_results.results, params);
-  //console.log(JSON.stringify(agg_results.results, null, 2))
 
   return receiveAggResults(values(agg_results.results));
 }

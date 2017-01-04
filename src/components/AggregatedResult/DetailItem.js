@@ -168,9 +168,16 @@ SpendingDataTable.propTypes = { value: PropTypes.object };
 
 const SpendingDataAmountsList = ({value}) => {
   const items = compact(map(value, (v, k) => {
+    if (k.includes('percent'))
+      v = (v * 100).toLocaleString() + "%";
+    else
+      v = v.toLocaleString();
+    k = startCase(k);
+    if (k.includes('Us'))
+      k= k.replace('Us', 'US');
     return(
     <li key={k}>
-      {startCase(k)}:  {v.toLocaleString()}
+      {k}:  {v}
     </li>
     );
   }));
@@ -188,7 +195,6 @@ export {
   UnorderedList,
   MonthlyAmountsList,
   PortsList,
-  PortsAmounts,
   I92List,
   SpendingDataTable
 };

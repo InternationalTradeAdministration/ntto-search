@@ -16,7 +16,6 @@ export function buildAggResults(raw_results, agg_results, params) {
         // Build initial agg entry if it doesn't exist yet:
         agg_results[key] = buildNewEntry(entry)
       }
-
       // Add date-amount k-v's to agg entry:
       if (k == 'i94')
         agg_results[key] = processI94(agg_results[key], entry);
