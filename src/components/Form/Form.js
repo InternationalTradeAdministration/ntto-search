@@ -53,6 +53,9 @@ const SelectField = ({ description, field, label = 'Untitled', options, multi = 
         options={options}
         multi={multi} autoBlur
         onBlur={() => field.onBlur(field.value)}
+        joinValues = {true}
+        delimiter = {','}
+        simpleValue = {true}
       />
     </div>
   </div>
