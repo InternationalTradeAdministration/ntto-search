@@ -1,5 +1,8 @@
 import React, { PropTypes } from 'react';
-import { Row, UnorderedList, MonthlyAmountsList, PortsList, I92List, SpendingDataTable } from './DetailItem';
+import { Row, UnorderedList, MonthlyAmountsList, PortsList, I92List, SpendingDataTable, SiatTable } from './DetailItem';
+import { I92 } from './../../apis/I92';
+import { SpendingData } from './../../apis/SpendingData';
+import { Siat } from './../../apis/Siat';
 
 const Detail = ({ result }) => {
 
@@ -36,15 +39,19 @@ const Detail = ({ result }) => {
         </Row>
 
         <Row label="I-92 Arrivals by Month">
-          <I92List value={result.i92_arrivals} />
+          {I92.entries_list({val: result.i92_departures})}
         </Row>
 
         <Row label="I-92 Departures by Month">
-          <I92List value={result.i92_departures} />
+          {I92.entries_list({val: result.i92_departures})}
         </Row>
 
         <Row label="Spending Data (Millions of Dollars)">
-          <SpendingDataTable value={result.spending_data} />
+          {SpendingData.entries_list({val: result.spending_data})}
+        </Row>
+
+        <Row label="Survey of International Air Travel Results">
+          {Siat.entries_list({val: result.siat_data})}
         </Row>
 
       </tbody>

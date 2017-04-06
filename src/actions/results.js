@@ -5,6 +5,7 @@ import { buildAggResults } from './build_agg_results.js';
 import { buildReports } from './build_reports.js';
 import { REQUEST_AGG_RESULTS, RECEIVE_FAILURE, PAGE_RESULTS, RECEIVE_AGG_RESULTS } from 'constants';
 import config from '../config.js';
+import { apis } from '../apis/apis.js';
 
 export function requestAggResults() {
   return {
@@ -34,25 +35,27 @@ export function receiveAggResults(payload) {
 }
 
 function aggregateResults(json, querystring, params, offset, agg_results, apis) {
-  var results = {};  
-  var count = 0;
-  for (var key in apis) {
+  const results = {};  
+  let count = 0;
+  for (let key in apis) {
     // 10k is the max offset that can be reached in Elasticsearch:
     if (json[count].total >= 10000) return receiveFailure('Too many results, enter more search terms to narrow search.');
     results[key] = json[count];
     count += 1;
   }
-    
+
   agg_results.results = buildAggResults(results, agg_results.results, params);
 
   if (has(results, 'i94')) agg_results.i94_total += results.i94.results.length;
   if (has(results, 'i92')) agg_results.i92_total += results.i92.results.length;
   if (has(results, 'spending_data')) agg_results.spending_data_total += results.spending_data.results.length;
+  if (has(results, 'siat')) agg_results.siat_total += results.siat.results.length;
 
   // Fetch next batch of results if needed:
   if (has(results, 'i94') && agg_results.i94_total >= results.i94.total) apis = omit(apis, 'i94');
   if (has(results, 'i92') && agg_results.i92_total >= results.i92.total) apis = omit(apis, 'i92');
   if (has(results, 'spending_data') && agg_results.spending_data_total >= results.spending_data.total) apis = omit(apis, 'spending_data');
+  if (has(results, 'siat') && agg_results.siat_total >= results.siat.total) apis = omit(apis, 'siat');
 
   if (!isEmpty(apis)) return fetchAggResults(querystring, params, offset+100, agg_results, apis);
 
@@ -61,13 +64,14 @@ function aggregateResults(json, querystring, params, offset, agg_results, apis) 
   return receiveAggResults(values(agg_results.results));
 }
 
-const { i94_url, i92_url, spending_data_url, apiKey } = config.api;
+const { apiKey } = config.api;
 
 function fetchAggResults(querystring, params, offset = 0, aggregated_results = {}, apis = {}) {
+
   return (dispatch) => {
     dispatch(requestAggResults(querystring));
 
-    var requests = values(apis).map( function(api){
+    const requests = values(apis).map( function(api){
       return sendRequest(api, querystring, offset);
     });
     return Promise.all(requests)
@@ -105,8 +109,7 @@ export function fetchAggResultsIfNeeded(params) {
       return dispatch(receiveAggResults([]));
     }
     else if(shouldFetchResults(getState())) {
-      var apis = { i94: i94_url, i92: i92_url, spending_data: spending_data_url };
-      var agg_results = { results: [], i94_total: 0, i92_total: 0, spending_data_total: 0 }
+      const agg_results = { results: [], i94_total: 0, i92_total: 0, spending_data_total: 0, siat_total: 0 }
       return dispatch(fetchAggResults(buildQueryString(params), params, 0, agg_results, apis));
     }
 
