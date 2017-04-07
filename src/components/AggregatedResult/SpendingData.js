@@ -1,6 +1,5 @@
 import { compact, get, isEmpty, map, startCase, pick } from '../../utils/lodash';
 import React, { Component, PropTypes } from 'react';
-import ReactList from 'react-list';
 import moment from 'moment';
 
 const SpendingDataTable = ({value}) => {

@@ -31,6 +31,7 @@ class I92List extends React.Component {
         <ReactList
           itemRenderer={::this.renderItem}
           length={this.state.items.length}
+          pageSize={5}
         />
       </div>
     );
