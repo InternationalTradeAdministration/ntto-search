@@ -13,7 +13,7 @@ const SpendingDataTable = ({value}) => {
   }));
   if (isEmpty(items)) return null;
 
-  return <table className="explorer__result-ports_list"><tbody>{items}</tbody></table>;
+  return <table className="explorer__result-spending_table"><tbody>{items}</tbody></table>;
 };
 SpendingDataTable.propTypes = { value: PropTypes.object };
 
