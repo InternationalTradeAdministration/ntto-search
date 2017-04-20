@@ -5,16 +5,17 @@ import moment from 'moment';
 
 class I92List extends React.Component {
   static propTypes = {
-    value: PropTypes.object,
+    value: PropTypes.array,
   }
 
   state = { items: [] };
 
   componentWillMount() {
-    const items = compact(map(this.props.value, (v, k) => {
+    const items = compact(map(this.props.value, (entry) => {
+      let key = Object.keys(entry)[0];
       return(
-      <li key={k}>
-        {k}:  <I92Table value={v} />
+      <li key={key}>
+        {key}:  <I92Table value={entry[key]} />
       </li>
       );
     }));
@@ -39,11 +40,12 @@ class I92List extends React.Component {
 }
 
 const I92Table = ({value}) => {
-  const items = compact(map(value, (v, k) => {
+  const items = compact(map(value, (date_entry) => {
+    let key = Object.keys(date_entry)[0];
     return(
-    <tr key={k}>
-      <td className="ports-cell">{moment(k).utc().format('MMM YYYY')}</td>
-      <td className="ports-cell"> <I92Amounts value={v} /> </td>
+    <tr key={key}>
+      <td className="ports-cell">{moment(key).utc().format('MMM YYYY')}</td>
+      <td className="ports-cell"> <I92Amounts value={date_entry[key]} /> </td>
     </tr>
     );
   }));
@@ -51,7 +53,7 @@ const I92Table = ({value}) => {
 
   return <table className="explorer__result-i92_table"><tbody>{items}</tbody></table>;
 };
-I92Table.propTypes = { value: PropTypes.object };
+I92Table.propTypes = { value: PropTypes.array };
 
 const I92Amounts = ({value}) => {
   const items = compact(map(value, (v, k) => {

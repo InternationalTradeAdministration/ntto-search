@@ -31,6 +31,7 @@ export function buildAggResults(raw_results, agg_results, params) {
       }
     }
   }
+
   return agg_results;
 }
 

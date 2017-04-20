@@ -1,5 +1,6 @@
 import { values, capitalize, compact, has, map, snakeCase } from '../utils/lodash';
 import { buildPortsValues } from './build_ports_values.js';
+import { I92 } from './../apis/I92';
 
 export function buildReports(agg_results, params){
   for (let key in agg_results) {
@@ -10,6 +11,9 @@ export function buildReports(agg_results, params){
     
     if( has(entry, 'ports_arrivals')) // Add ports fields
       agg_results[key] = Object.assign(entry, buildPortsValues(entry.ports_arrivals));
+
+    entry.i92_arrivals = I92.sortEntries(entry.i92_arrivals);
+    entry.i92_departures = I92.sortEntries(entry.i92_departures);
   }
   return agg_results;
 }

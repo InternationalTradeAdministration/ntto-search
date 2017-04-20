@@ -45,7 +45,7 @@ const Detail = ({ result }) => {
         <table className="explorer__result-item__detail">
           <tbody>
             <Row label="I-92 Arrivals by Month">
-              {I92.entries_list({val: result.i92_departures})}
+              {I92.entries_list({val: result.i92_arrivals})}
             </Row>
 
             <Row label="I-92 Departures by Month">
