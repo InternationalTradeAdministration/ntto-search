@@ -8,8 +8,6 @@ import {RadioGroup, Radio} from 'react-radio-group'
 import FormMessages from 'redux-form-validation';
 import {generateValidation} from 'redux-form-validation';
 
-import countryList from '../../fixtures/countries';
-import worldRegionsList from '../../fixtures/world_regions';
 import './Form.scss';
 
  var validations = {
@@ -92,16 +90,16 @@ DateRangeField.propTypes = {
   startDate: PropTypes.object.isRequired,
 };
 
-const CountriesField = ({field}) => (
+const CountriesField = ({field, options}) => (
   <SelectField
-    field={field} label="All Countries" options={countryList} multi
+    field={field} label="All Countries" options={options} multi
     description="Choose one or more countries to search."
   />
 )
 
-const WorldRegionsField = ({field}) => (
+const WorldRegionsField = ({field, options}) => (
   <SelectField
-    field={field} label="ITA World Regions" options={worldRegionsList} multi
+    field={field} label="ITA World Regions" options={options} multi
     description="Choose one or more world regions to search."
   />
 )
@@ -110,7 +108,8 @@ const WorldRegionsField = ({field}) => (
 class Form extends Component {
   static propTypes = {
     fields: PropTypes.object.isRequired,
-    handleSubmit: PropTypes.func.isRequired
+    handleSubmit: PropTypes.func.isRequired,
+    formOptions: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -126,19 +125,20 @@ class Form extends Component {
   render() {
     const { 
       fields: { selectOptions, countries, worldRegions, startDate, endDate }, 
-      handleSubmit 
+      handleSubmit,
+      formOptions
     } = this.props;
 
     var selectField;
     if (selectOptions.value == 'countries' || selectOptions.value === ''){
       validations.countries = {required: true}
       validations.worldRegions = {required: false}
-      selectField = <CountriesField field={countries} />;
+      selectField = <CountriesField field={countries} options={formOptions.countries}/>;
     }
     else if (selectOptions.value == 'worldRegions'){
       validations.countries = {required: false}
       validations.worldRegions = {required: true}
-      selectField =  <WorldRegionsField field={worldRegions}/>;
+      selectField =  <WorldRegionsField field={worldRegions} options={formOptions.worldRegions}/>;
     }
 
     return (

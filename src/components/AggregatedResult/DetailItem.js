@@ -88,113 +88,11 @@ const PortsAmounts = ({value}) => {
 };
 PortsAmounts.propTypes = { value: PropTypes.array };
 
-class I92List extends React.Component {
-  static propTypes = {
-    value: PropTypes.object,
-  }
-
-  state = { items: [] };
-
-  componentWillMount() {
-    const items = compact(map(this.props.value, (v, k) => {
-      return(
-      <li key={k}>
-        {k}:  <I92Table value={v} />
-      </li>
-      );
-    }));
-    this.setState({items});
-  }
-
-  renderItem(index, key) {
-    return this.state.items[index];
-  }
-
-  render() {
-    return (
-      <div className="explorer__result-i92_amounts">
-        <ReactList
-          itemRenderer={::this.renderItem}
-          length={this.state.items.length}
-        />
-      </div>
-    );
-  }
-}
-
-const I92Table = ({value}) => {
-  const items = compact(map(value, (v, k) => {
-    return(
-    <tr key={k}>
-      <td className="ports-cell">{moment(k).utc().format('MMM YYYY')}</td>
-      <td className="ports-cell"> <I92Amounts value={v} /> </td>
-    </tr>
-    );
-  }));
-  if (isEmpty(items)) return null;
-
-  return <table className="explorer__result-i92_table"><tbody>{items}</tbody></table>;
-};
-I92Table.propTypes = { value: PropTypes.object };
-
-const I92Amounts = ({value}) => {
-  const items = compact(map(value, (v, k) => {
-    return(
-    <li key={k}>
-      {startCase(k)}:  {v}
-    </li>
-    );
-  }));
-  if (isEmpty(items)) return null;
-
-  return <ul className="explorer__result-i92_amounts">{items}</ul>;
-};
-I92Amounts.propTypes = { value: PropTypes.object };
-
-const SpendingDataTable = ({value}) => {
-  const items = compact(map(value, (v, k) => {
-    return(
-    <tr key={k}>
-      <td className="ports-cell">{moment(k, 'YYYY').utc().format('YYYY')}</td>
-      <td className="ports-cell"> <SpendingDataAmountsList value={v} /> </td>
-    </tr>
-    );
-  }));
-  if (isEmpty(items)) return null;
-
-  return <table className="explorer__result-ports_list"><tbody>{items}</tbody></table>;
-};
-SpendingDataTable.propTypes = { value: PropTypes.object };
-
-const SpendingDataAmountsList = ({value}) => {
-  const items = compact(map(value, (v, k) => {
-    if (k.includes('percent'))
-      v = (v * 100).toLocaleString() + "%";
-    else
-      v = v.toLocaleString();
-    k = startCase(k);
-    if (k.includes('Us'))
-      k= k.replace('Us', 'US');
-    return(
-    <li key={k}>
-      {k}:  {v}
-    </li>
-    );
-  }));
-  if (isEmpty(items)) return null;
-
-  return <ul className="explorer__result-ports_amounts">{items}</ul>;
-};
-SpendingDataAmountsList.propTypes = { value: PropTypes.object };
-
-
 export {
   Link,
   ListItem,
   Row,
   UnorderedList,
   MonthlyAmountsList,
-  PortsList,
-  I92List,
-  SpendingDataTable
+  PortsList
 };

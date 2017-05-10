@@ -6,8 +6,8 @@ export function buildPortsValues(ports_arrivals){
 }
 
 function sortPortsArrivals(ports_arrivals){
-  for (var date_key in ports_arrivals) {
-    var ports_array = ports_arrivals[date_key];
+  for (let date_key in ports_arrivals) {
+    let ports_array = ports_arrivals[date_key];
     ports_array.sort(compare);
   }
   return ports_arrivals

@@ -4,11 +4,13 @@ I94 Search
 A search client for I94 arrivals data by month.  
 
 ### Setup
+Ensure that node and npm are installed, if not:  https://nodejs.org/en/download/
+Then:
 
 ```
 npm install
 npm start
-open http://localhost:3000
+open http://localhost:3001
 ```
 
 ### Linting

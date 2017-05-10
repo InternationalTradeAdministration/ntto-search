@@ -27,10 +27,37 @@
     overflow-y: scroll;
 }
 
+.explorer__result-siat_question_list {
+    max-height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #cbcbcb;
+    padding-left: 20px;
+}
+
 .explorer__result-ports_list {
   max-height: 300px;
   overflow-y: scroll;
   display: block;
+}
+
+.explorer__result-siat_table {
+  max-height: 400px;
+  overflow-y: scroll;
+  display: block;
+
+  td {
+    padding: 10px;
+  }
+}
+
+.explorer__result-spending_table {
+  max-height: 300px;
+  overflow-y: scroll;
+  display: block;
+
+  td {
+    padding: 10px;
+  }
 }
 
 .ports-cell {

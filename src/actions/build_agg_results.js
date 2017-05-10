@@ -1,13 +1,16 @@
 import { values, capitalize, compact, has, map, omit } from '../utils/lodash';
+import { I92 } from './../apis/I92';
+import { SpendingData } from './../apis/SpendingData';
+import { Siat } from './../apis/Siat';
 
 export function buildAggResults(raw_results, agg_results, params) {
   // Iterate i94 and i92 sequentialy: 
-  for (var k in raw_results) {
-    var entries = raw_results[k].results;
+  for (let k in raw_results) {
+    const entries = raw_results[k].results;
 
-    for (var i in entries){
-      var entry = entries[i];
-      var key = entry.country;
+    for (let i in entries){
+      const entry = entries[i];
+      let key = entry.country;
       if(!key) key = entry.i94_country_or_region;
       if(!key) key = entry.country_name;
       if(!key) key = entry.country_or_region;
@@ -20,11 +23,15 @@ export function buildAggResults(raw_results, agg_results, params) {
       if (k == 'i94')
         agg_results[key] = processI94(agg_results[key], entry);
       if (k == 'i92')
-        agg_results[key] = processI92(agg_results[key], entry);
+        agg_results[key] = I92.processI92(agg_results[key], entry);
       if (k == 'spending_data')
-        agg_results[key] = processSpendingData(agg_results[key], entry);
+        agg_results[key] = SpendingData.processSpendingData(agg_results[key], entry);
+      if (k == 'siat'){
+        agg_results[key] = Siat.processSiat(agg_results[key], entry);
+      }
     }
   }
+
   return agg_results;
 }
 
@@ -42,29 +49,6 @@ function processI94(agg_entry, raw_entry){
   return agg_entry;
 }
 
-function processI92(agg_entry, raw_entry){
-  if (raw_entry.event_type == 'Arrival'){
-    if (!has(agg_entry.i92_arrivals, raw_entry.foreign_port + ' to ' + raw_entry.us_port))
-      agg_entry.i92_arrivals[raw_entry.foreign_port + ' to ' + raw_entry.us_port] = {};
-
-    agg_entry.i92_arrivals[raw_entry.foreign_port + ' to ' + raw_entry.us_port][raw_entry.date] = i92Entry(raw_entry);
-  }
-
-  if (raw_entry.event_type == 'Departure'){
-    if (!has(agg_entry.i92_departures, raw_entry.us_port + ' to ' + raw_entry.foreign_port))
-      agg_entry.i92_departures[raw_entry.us_port + ' to ' + raw_entry.foreign_port] = {};
-
-    agg_entry.i92_departures[raw_entry.us_port + ' to ' + raw_entry.foreign_port][raw_entry.date] = i92Entry(raw_entry);
-  }
-
-  return agg_entry;
-}
-
-function processSpendingData(agg_entry, raw_entry){
-  agg_entry.spending_data[raw_entry.date] = omit(raw_entry, ['date', 'country', 'id', 'country_or_region', 'world_region']);
-  return agg_entry;
-}
-
 function buildNewEntry(entry){
   return {
     i94_country_or_region: entry.i94_country_or_region,
@@ -78,18 +62,7 @@ function buildNewEntry(entry){
     ports_arrivals: {},
     i92_arrivals: {},
     i92_departures: {},
-    spending_data: {}
-  }
-}
-
-function i92Entry(entry){
-  return {
-    passenger_total: entry.passenger_total,
-    citizens_total: entry.citizens_total,
-    aliens_total: entry.aliens_total,
-    us_flag_total: entry.us_flag_total,
-    foreign_flag_total: entry.foreign_flag_total,
-    scheduled_flights_total: entry.scheduled_flights_total,
-    chartered_flights_total: entry.chartered_flights_total
+    spending_data: {},
+    siat_data: {}
   }
 }
