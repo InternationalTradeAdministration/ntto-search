@@ -45,8 +45,7 @@ const AggregatedResult = ({ onPaging, query = {}, results }) => {
     return (<div className="explorer__result">{results.error}</div>);
 
   const items = map(results.pageItems, result => {
-    const key = result.country ? result.country : result.i94_country_or_region;
-    return <Item key={key} result={result} />
+    return <Item key={Object.keys(result)[0]} result={Object.values(result)[0]} result_key={Object.keys(result)[0]}/>
   });
 
   const pagesProps = {

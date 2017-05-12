@@ -61,7 +61,7 @@ function aggregateResults(json, querystring, params, offset, agg_results, apis) 
 
   agg_results.results = buildReports(agg_results.results, params);
 
-  return receiveAggResults(values(agg_results.results));
+  return receiveAggResults(agg_results.results);
 }
 
 const { apiKey } = config.api;

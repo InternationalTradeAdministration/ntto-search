@@ -15,6 +15,7 @@ export function buildReports(agg_results, params){
     entry.i92_arrivals = I92.sortEntries(entry.i92_arrivals);
     entry.i92_departures = I92.sortEntries(entry.i92_departures);
   }
+  agg_results = sortObjectByKeys(agg_results);
   return agg_results;
 }
 
@@ -33,3 +34,12 @@ function populateAdditionalFields(arrivals_keys, entry){
   }
 }
 
+function sortObjectByKeys(object){
+  const sorted_array = [];
+  Object.keys(object).sort().forEach(function(key){
+    let new_object = {};
+    new_object[key] = object[key];
+    sorted_array.push(new_object);
+  });
+  return sorted_array;
+}

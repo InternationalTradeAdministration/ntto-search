@@ -11,48 +11,59 @@ const Detail = ({ result }) => {
   return (
     <Collapse accordion={false}>
       <Collapse.Panel header="I-94 International Arrivals">
-        <table className="explorer__result-item__detail">
-          <tbody>
-            <Row label="Country or Region">{result.i94_country_or_region}</Row>
-            <Row label="NTTO Groups">
-              <UnorderedList value={result.ntto_group} />
-            </Row>
-            
-            <Row label="Total Arrivals by Month">
-              <MonthlyAmountsList value={result.total_arrivals} />
-            </Row>
+        <Collapse accordion={false}>
 
-            <Row label="Business Visa Arrivals by Month">
-              <MonthlyAmountsList value={result.business_visa_arrivals} />
-            </Row>
+          <Collapse.Panel header="Total Arrivals">
+            <table className="explorer__result-item__detail">
+              <tbody>             
+                <Row label="Total Arrivals by Month">
+                  <MonthlyAmountsList value={result.total_arrivals} />
+                </Row>
+              </tbody>
+            </table>
+          </Collapse.Panel>
 
-            <Row label="Pleasure Visa Arrivals by Month">
-              <MonthlyAmountsList value={result.pleasure_visa_arrivals} />
-            </Row>
+          <Collapse.Panel header="Arrivals by Visa Type">
+            <table className="explorer__result-item__detail">
+              <tbody>  
+                <Row label="Business Visa Arrivals by Month">
+                  <MonthlyAmountsList value={result.business_visa_arrivals} />
+                </Row>
 
-            <Row label="Student Visa Arrivals by Month">
-              <MonthlyAmountsList value={result.student_visa_arrivals} />
-            </Row>
+                <Row label="Pleasure Visa Arrivals by Month">
+                  <MonthlyAmountsList value={result.pleasure_visa_arrivals} />
+                </Row>
 
-            <Row label="Ports of Entry Arrivals by Month">
-              <PortsList value={result.ports_arrivals} />
-            </Row>
-          </tbody>
-        </table>
+                <Row label="Student Visa Arrivals by Month">
+                  <MonthlyAmountsList value={result.student_visa_arrivals} />
+                </Row>
+              </tbody>
+            </table>
+          </Collapse.Panel>
+
+          <Collapse.Panel header="Arrivals by Port of Entry">
+            <table className="explorer__result-item__detail">
+              <tbody>  
+                <Row label="Ports of Entry Arrivals by Month">
+                  <PortsList value={result.ports_arrivals} />
+                </Row>
+              </tbody>
+            </table>
+          </Collapse.Panel>
+
+        </Collapse>
       </Collapse.Panel>
 
       <Collapse.Panel header="APIS (I-92) Arrivals and Departures">
-        <table className="explorer__result-item__detail">
-          <tbody>
-            <Row label="I-92 Arrivals by Month">
-              {I92.entries_list({val: result.i92_arrivals})}
-            </Row>
+        <Collapse accordion={false}>
+          <Collapse.Panel header="I-92 Arrivals by Month">
+            {I92.entries_list({val: result.i92_arrivals})}
+          </Collapse.Panel>
 
-            <Row label="I-92 Departures by Month">
-              {I92.entries_list({val: result.i92_departures})}
-            </Row>
-          </tbody>
-        </table>
+          <Collapse.Panel header="I-92 Departures by Month">
+            {I92.entries_list({val: result.i92_departures})}
+          </Collapse.Panel>
+        </Collapse>
       </Collapse.Panel>
 
       <Collapse.Panel header="Spending Data">

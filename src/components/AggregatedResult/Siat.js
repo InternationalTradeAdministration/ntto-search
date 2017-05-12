@@ -2,6 +2,8 @@ import { compact, get, isEmpty, map, startCase, pick } from '../../utils/lodash'
 import React, { Component, PropTypes } from 'react';
 import ReactList from 'react-list';
 import moment from 'moment';
+import Collapse from 'rc-collapse';
+import 'rc-collapse/assets/index.css';
 
 const SiatTable = ({value}) => {
   const items = compact(map(value, (v, k) => {
@@ -17,42 +19,25 @@ const SiatTable = ({value}) => {
 }
 SiatTable.propTypes = { value: PropTypes.object };
 
-class SiatQuestionList extends React.Component {
-  static propTypes = {
-    value: PropTypes.object,
-  }
-
-  state = { items: [] };
-
-  componentWillMount() {
-    const items = compact(map(this.props.value, (v, question) => {
-      return(
-      <li key={question}>
-        <p><b> {question} </b></p>
+const SiatQuestionList = ({value}) => {
+  const items = compact(map(value, (v, question) => {
+    return(
+      <Collapse.Panel header={question} key={question}>
         <p>Number of respondents:  {v.number_of_respondents}</p>
         <SiatResultsList value={v.results} />
-      </li>
-      );
-    }));
-    this.setState({items});
-  }
-
-  renderItem(index, key) {
-    return this.state.items[index];
-  }
-
-  render() {
-    return (
-      <div className="explorer__result-siat_question_list">
-        <ReactList
-          itemRenderer={::this.renderItem}
-          length={this.state.items.length}
-          pageSize={5}
-        />
-      </div>
+      </Collapse.Panel>
     );
-  }
+  }));
+  if(isEmpty(items)) return null;
+  return (
+    <div className="explorer__result-siat_question_list">
+      <Collapse accordion={false}>
+        {items}
+      </Collapse>
+    </div>
+  );
 }
+SiatQuestionList.propTypes = { value: PropTypes.object };
 
 const SiatResultsList = ({value}) => {
   const items = compact(map(value, (item, i) => {

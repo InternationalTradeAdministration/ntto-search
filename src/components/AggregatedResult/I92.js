@@ -2,42 +2,27 @@ import { compact, get, isEmpty, map, startCase, pick } from '../../utils/lodash'
 import React, { Component, PropTypes } from 'react';
 import ReactList from 'react-list';
 import moment from 'moment';
+import Collapse from 'rc-collapse';
+import 'rc-collapse/assets/index.css';
 
-class I92List extends React.Component {
-  static propTypes = {
-    value: PropTypes.array,
-  }
-
-  state = { items: [] };
-
-  componentWillMount() {
-    const items = compact(map(this.props.value, (entry) => {
-      let key = Object.keys(entry)[0];
-      return(
-      <li key={key}>
-        {key}:  <I92Table value={entry[key]} />
-      </li>
-      );
-    }));
-    this.setState({items});
-  }
-
-  renderItem(index, key) {
-    return this.state.items[index];
-  }
-
-  render() {
-    return (
-      <div className="explorer__result-i92_amounts">
-        <ReactList
-          itemRenderer={::this.renderItem}
-          length={this.state.items.length}
-          pageSize={5}
-        />
-      </div>
+const I92List = ({value}) => {
+  const items = compact(map(value, (entry) => {
+    let key = Object.keys(entry)[0];
+    return(
+    <Collapse.Panel key={key} header={key}>
+      <I92Table value={entry[key]} />
+    </Collapse.Panel>
     );
-  }
-}
+  }));
+  return (
+    <div className="explorer__result-i92_amounts">
+      <Collapse accordion={false}>
+        {items}
+      </Collapse>
+    </div>
+  );
+};
+I92List.propTypes = { value: PropTypes.array };
 
 const I92Table = ({value}) => {
   const items = compact(map(value, (date_entry) => {
