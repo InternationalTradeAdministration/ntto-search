@@ -23,8 +23,8 @@ const SiatQuestionList = ({value}) => {
   const items = compact(map(value, (v, question) => {
     return(
       <Collapse.Panel header={question} key={question}>
-        <p>Number of respondents:  {v.number_of_respondents}</p>
-        <SiatResultsList value={v.results} />
+        <p>Number of respondents:  {parseInt(v.number_of_respondents)}</p>
+        <SiatResultsList value={v.results} question={question}/>
       </Collapse.Panel>
     );
   }));
@@ -39,19 +39,30 @@ const SiatQuestionList = ({value}) => {
 }
 SiatQuestionList.propTypes = { value: PropTypes.object };
 
-const SiatResultsList = ({value}) => {
+const SiatResultsList = ({value, question}) => {
+  let headers = <tr><th>Answer</th><th>Value (Dollars)</th></tr>;
+  if (question.includes('%')) {
+      headers = <tr><th>Answer</th><th>Percentage</th></tr>;
+    }
   const items = compact(map(value, (item, i) => {
+    let formatted_val = parseFloat(item.percentage_or_value);
+    if (question.includes('%')) {
+      formatted_val = formatted_val * 100;
+    }
     return(
     <tr key={i}>
-      <td className="ports-cell">Answer:  {item.answer}</td>
-      <td className="ports-cell">Percentage or value:  {item.percentage_or_value}</td>
+      <td className="ports-cell">{item.answer}</td>
+      <td className="ports-cell">{formatted_val.toFixed(2)}</td>
     </tr>
     );
   }));
   if (isEmpty(items)) return null;
-  return <table className="explorer__result-ports_amounts"><tbody>{items}</tbody></table>;
+  return <table className="explorer__result-ports_amounts"><tbody>{headers}{items}</tbody></table>;
 };
-SiatResultsList.propTypes = { value: PropTypes.array };
+SiatResultsList.propTypes = { 
+  value: PropTypes.array,
+  question: PropTypes.string
+};
 
 export {
   SiatTable
