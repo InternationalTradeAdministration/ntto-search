@@ -3,6 +3,7 @@ import { stringify } from 'querystring';
 import { isEmpty, omit, values, has, map, uniq } from '../utils/lodash';
 import { SET_FORM_OPTIONS } from 'constants';
 import config from '../config.js';
+import { receiveFailure } from './results.js';
 
 const { i94_url, i92_url, spending_data_url, siat_url, apiKey } = config.api;
 
@@ -24,14 +25,17 @@ export function setFormOptions(countries_array, world_regions_array){
 export function requestFormOptions(){
   return (dispatch) => {
     const urls = [i94_url, i92_url, spending_data_url, siat_url];
-    const requests = values(urls).map( function(url){
+    const requests = values(urls).map((url) => {
       return fetch(`${url}?api_key=${apiKey}&size=1`)
+        .then((response)=> {
+          return response.json();
+        });
     });
     return Promise.all(requests)
-      .then(response => ( Promise.all(response.map( function(api_result){
-        return api_result.json()
-      }))))
-      .then(json => dispatch(consolidateOptions(json)));
+      .then(json => dispatch(consolidateOptions(json)))
+      .catch((error) => {
+        dispatch(receiveFailure('There was an error connecting to the data source.'));
+      });
   }
 }
 

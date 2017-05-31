@@ -15,7 +15,7 @@ const ResultCountLabel = ({ count, query }) => {
   }
   if (text == '') count = '';
   
-  return <p className="result-count-label"><div className="result-count">{count}</div>{text}</p>;
+  return <p className="result-count-label"><span className="result-count">{count}</span>{text}</p>;
 };
 ResultCountLabel.propTypes = {
   count: PropTypes.number.isRequired,

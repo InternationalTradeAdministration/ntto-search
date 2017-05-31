@@ -71,19 +71,22 @@ function fetchAggResults(querystring, params, offset = 0, aggregated_results = {
   return (dispatch) => {
     dispatch(requestAggResults(querystring));
 
-    const requests = values(apis).map( function(api){
+    const requests = values(apis).map((api) => {
       return sendRequest(api, querystring, offset);
     });
     return Promise.all(requests)
-      .then(response => ( Promise.all(response.map( function(api_result){
-        return api_result.json()
-      }))))
-      .then(json => dispatch(aggregateResults(json, querystring, params, offset, aggregated_results, apis)));
+      .then(json => dispatch(aggregateResults(json, querystring, params, offset, aggregated_results, apis)))
+      .catch((error) => {
+        dispatch(receiveFailure('There was an error retrieving results from the data source.'));
+      });
   };
 }
 
 function sendRequest(api, querystring, offset){
   return fetch(`${api}?api_key=${apiKey}&size=100&offset=${offset}&${querystring}`)
+    .then((response) => {
+      return response.json();
+    });
 }
 
 function shouldFetchResults(state) {
