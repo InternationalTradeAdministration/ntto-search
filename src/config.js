@@ -16,7 +16,7 @@ const config = Object.assign({
       i92_url: 'https://api.trade.gov/v1/i92_entries/search',
       spending_data_url: 'https://api.trade.gov/v2/ntto_spending_data/search',
       siat_url: 'https://api.trade.gov/v1/siat_data/search',
-      apiKey: 'O6fmOIPtrvDlqoDe2_6UbKJc',
+      apiKey: 'd0lmowK8tvxPixAfm9sKOd_f',
     },
   },
 });
