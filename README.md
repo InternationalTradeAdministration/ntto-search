@@ -4,7 +4,7 @@ I94 Search
 A search client for I94 arrivals data by month.  
 
 ### Setup
-Ensure that node and npm are installed, if not:  https://nodejs.org/en/download/
+Ensure that node (~6.x) and npm are installed, if not:  https://nodejs.org/en/download/
 Then:
 
 ```
